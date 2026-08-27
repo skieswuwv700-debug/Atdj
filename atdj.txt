@@ -355,6 +355,10 @@ local function tp(target)
     if not RootPart then return end
     if Humanoid.Sit then Humanoid.Sit = false end
 
+    pcall(function()
+        RootPart:SetNetworkOwner(Players.LocalPlayer)
+    end)
+
     local targetPos = typeof(target) == "CFrame" and target.Position or target
     local currentDist = (targetPos - RootPart.Position).Magnitude
 
@@ -366,6 +370,32 @@ local function tp(target)
                 distm, middle = d, pos
             end
         end
+        if middle then
+            if Near_Island(RootPart.Position).Name ~= Near_Island(middle).Name then
+                _C("requestEntrance", middle)
+                task.wait(1)
+            end
+        end
+    end
+
+    local startPos = RootPart:GetPivot().Position
+    targetPos = typeof(target) == "CFrame" and target.Position or target
+    local dir = (targetPos - startPos).Unit
+    local dist = (targetPos - startPos).Magnitude
+    local movedDist = 0
+    local startTime = tick()
+
+    while movedDist < dist and Humanoid.Health > 0 and RootPart and not _G['StopTween'] do
+        local elapsed = tick() - startTime
+        local speed = 250
+        movedDist = math.min(elapsed * speed, dist)
+        local newPos = Vector3.new(startPos.X + dir.X * movedDist, targetPos.Y, startPos.Z + dir.Z * movedDist)
+        Character:PivotTo(CFrame.new(newPos))
+        task.wait(0.03)
+    end
+
+    Character:PivotTo(typeof(target) == "CFrame" and target or CFrame.new(targetPos))
+end
 
         if middle then
             if Near_Island(RootPart.Position).Name ~= Near_Island(middle).Name then
@@ -387,6 +417,7 @@ local function tp(target)
         local remaining = dist - movedDist
 
         local speed = 250
+
         movedDist = math.min(elapsed * speed, dist)
         local newPos = Vector3.new(startPos.X + dir.X * movedDist, targetPos.Y, startPos.Z + dir.Z * movedDist)
         Character:PivotTo(CFrame.new(newPos))
