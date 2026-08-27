@@ -386,8 +386,7 @@ local function tp(target)
         local elapsed   = tick() - startTime
         local remaining = dist - movedDist
 
-        local speed = remaining <= 250 and 270 * 1.5 or 270
-
+        local speed = 250
         movedDist = math.min(elapsed * speed, dist)
         local newPos = Vector3.new(startPos.X + dir.X * movedDist, targetPos.Y, startPos.Z + dir.Z * movedDist)
         Character:PivotTo(CFrame.new(newPos))
