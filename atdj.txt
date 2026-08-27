@@ -350,31 +350,15 @@ local function GetDataClient()
 	return a
 end
 
-local function tp(target)
-    if Humanoid.Health <= 0 then return end
-    if not RootPart then return end
-    if Humanoid.Sit then Humanoid.Sit = false end
+local targetPos = typeof(target) == "CFrame" and target.Position or target
+local currentDist = (targetPos - RootPart.Position).Magnitude
 
-    pcall(function()
-        RootPart:SetNetworkOwner(Players.LocalPlayer)
-    end)
-
-    local targetPos = typeof(target) == "CFrame" and target.Position or target
-    local currentDist = (targetPos - RootPart.Position).Magnitude
-
-    if currentDist >= 2000 then
-        local distm, middle = math.huge, nil
-        for _, pos in pairs(CanTeleport[WorldSea]) do
-            local d = (pos - targetPos).Magnitude
-            if d < currentDist and d < distm then
-                distm, middle = d, pos
-            end
-        end
-        if middle then
-            if Near_Island(RootPart.Position).Name ~= Near_Island(middle).Name then
-                _C("requestEntrance", middle)
-                task.wait(1)
-            end
+if currentDist >= 2000 then
+    local distm, middle = math.huge, nil
+    for _, pos in pairs(CanTeleport[WorldSea]) do
+        local d = (pos - targetPos).Magnitude
+        if d < currentDist and d < distm then
+            distm, middle = d, pos
         end
     end
 
